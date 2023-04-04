@@ -1,0 +1,125 @@
+<div class="container" ng-controller="productController">
+    <h1 align="center">Правка списка продуктов</h1>
+    <table class="table" cellpadding="0" cellspacing="0" width="80%" align="center">
+        <tr>
+            <td width="40%">
+                <form novalidate ng-submit="loadPageProducts(0, true, false)">
+                    <div class="form-floating input-group-sm">
+                        <input type="text" class="form-control" id="filterTitle" placeholder="Наименование продукта" ng-model="filter.part_title">
+                    </div>
+                    <p></p>
+                    <div class="form-floating input-group-sm">
+                        <input type="number" class="form-control" id="filterMinPrice" placeholder="Мин. цена" ng-model="filter.min_price">
+                    </div>
+                    <p></p>
+                    <div class="form-floating input-group-sm">
+                        <input type="number" class="form-control" id="filterMaxPrice" placeholder="Макс. цена" ng-model="filter.max_price">
+                    </div>
+                    <p></p>
+                    <button class="btn btn-outline-warning btn-sm" style="width: 100%;" type="submit">Применить</button>
+                </form>
+            </td>
+            <!--        </tr>-->
+            <td width="60%">
+                <table align="center">
+                    <tr>
+                        <td ><b>Перейти:</b></td>
+                        <td>&nbsp;</td>
+                        <td width="35%" colspan="2">
+                            <button type="button" class="btn btn-outline-info btn-sm" style="width: 100%;" ng-click="showNavigationPage()">Страница навигации</button>
+                        </td>
+                        <td width="35%" colspan="2">
+<!--                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" onclick="location.href = 'logout'">Выход</button>-->
+                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" ng-click="tryLogout()">Выход</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="30%" colspan="2"><b>На странице:</b></td>
+                        <form class="form-floating input-group">
+                            <td width="25%" align="right">
+                                <input class="form-control" type="number" ng-model="numberProduct" id="numberOnPage" name="numberOnPage" placeholder={{applyValue}} required/>
+                            </td>
+                            <td width="10%" align="right">
+                                <button class="btn btn-outline-primary" ng-click="applyNumberProducts()">OK</button>
+                            </td>
+                        </form>
+                        <td width="35%" align="right" colspan="2">
+                            <button class="btn btn-outline-primary" ng-click="loadAllProducts()">показать все</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Страницы:</b></td>
+                        </td>
+                        <td width="25%" align="left">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(0, true, false)">&nbsp;&nbsp;&nbsp;первая&nbsp;&nbsp;&nbsp;</button>
+                        </td>
+                        <td width="10%" align="right">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(-1, false, false)">&lt;&lt;</button>
+                        </td>
+                        <td width="10%" align="left">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(1, false, false)">&gt;&gt;</button>
+                        </td>
+                        <td width="25%" align="right">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(0, false, true)">последняя</button>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <h3 align="center">Список продуктов</h3>
+    <table class="table table-striped" width="80%" align="center">
+        <thead class="thead-light">
+        <tr>
+            <td><b>ID</b></td>
+            <td><b>Наименование продукта</b></td>
+            <td colspan="3" align="center"><b>Стоимость</b></td>
+            <td><b>Действие</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="p in ProductsList">
+            <td>{{p.id}}</td>
+            <td>{{p.title}}</td>
+            <td><button class="btn btn-primary" ng-click="updateProduct(p, -1)">-</button></td>
+            <td>{{p.price}}</td>
+            <td><button class="btn btn-primary" ng-click="updateProduct(p, 1)">+</button></td>
+            <td><button class="btn btn-danger" ng-click="deleteProduct(p.id)">Удалить</button></td>
+        </tr>
+        <tr>
+            <td colspan="4"><b><i>Всего продуктов на странице:</i></b></td>
+            <td colspan="2" align="left"><b>{{ProductsList.length}}</b></td>
+        </tr>
+        </tbody>
+    </table>
+    <h3 align="center">Добавить продукт в список</h3>
+    <table width="80%"  class="table table-hover" cellpadding="0" cellspacing="0" align="center">
+        <thead class="thead-light">
+        <tr>
+            <td><b>Наименование</b></td>
+            <td><b>Цена</b></td>
+            <td><b>Категория</b></td>
+            <td><b>Действие</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+<!--            <form class="form-floating input-group" ng-model="newProduct">-->
+            <form class="form-floating input-group">
+                <td><input class="form-control" type="text" ng-model="newProduct.title" id="title" name="title" placeholder="Наименование" required/></td>
+                <td><input class="form-control" type="number" ng-model="newProduct.price" id="price" name="price" placeholder="Цена" required/></td>
+                <td>
+                    <select class="form-select" id="categoryTitle" name="categoryTitle" ng-init = "selected" ng-model="categoryTitle" required>
+                        <option ng-selected="selected" value="" selected>Выбор категории</option>
+                        <option value="Продукты">Продукты</option>
+                        <option value="Бытовая химия">Бытовая химия</option>
+                    </select>
+                </td>
+                <td><button class="btn btn-primary" type="button" ng-click="addNewProduct()">Добавить в список</button></td>
+            </form>
+        </tr>
+        </tbody>
+    </table>
+</div>

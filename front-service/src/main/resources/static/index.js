@@ -1,0 +1,74 @@
+var app = angular.module('market', ['ngRoute', 'ngStorage'])
+    .config(function ($routeProvider, $httpProvider) {
+
+    $routeProvider.when('/welcome',
+    {
+    templateUrl:'welcome/welcomeTemplate.html',
+    controller:'welcomeController',
+    controllerAs:'welcome'
+    })
+    .when('/keycloak',
+    {
+    templateUrl:'keycloakTemplate.html',
+    controller:'keycloakController',
+    controllerAs:'keycloak'
+    })
+    .when('/login',
+    {
+    templateUrl:'login/loginTemplate.html',
+    controller:'loginController',
+    controllerAs:'login'
+    })
+    .when('/registration',
+    {
+    templateUrl:'registration/registrationTemplate.html',
+    controller:'registrationController',
+    controllerAs:'registration'
+    })
+    .when('/authority',
+    {
+    templateUrl:'authority/authorityTemplate.html',
+    controller:'authorityController',
+    controllerAs:'authority'
+    })
+    .when('/navigation',
+    {
+    templateUrl:'navigation/navigationTemplate.html',
+    controller:'navigationController',
+    controllerAs:'navigation'
+    })
+    .when('/profile',
+    {
+    templateUrl:'profile/profileTemplate.html',
+    controller:'profileController',
+    controllerAs:'profile'
+    })
+    .when('/cart',
+    {
+    templateUrl:'cart/cartTemplate.html',
+    controller:'cartController',
+    controllerAs:'cart'
+    })
+    .when('/orders',
+    {
+    templateUrl:'orders/ordersTemplate.html',
+    controller:'ordersController',
+    controllerAs:'orders'
+    })
+
+    .when('/products',
+    {
+    templateUrl:'product/productTemplate.html',
+    controller:'productController',
+    controllerAs:'products'
+    })
+    .when('/users',
+    {
+    templateUrl:'users/usersTemplate.html',
+    controller:'usersController',
+    controllerAs:'users'
+    })
+    .otherwise({
+    redirectTo: 'welcome'
+    });
+});

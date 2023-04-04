@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+
+<html ng-app="market">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular-route.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
+    <script src="index.js"></script>
+    <script src="welcome/welcomeController.js"></script>
+    <script src="login/loginController.js"></script>
+    <script src="authority/authorityController.js"></script>
+    <script src="navigation/navigationController.js"></script>
+    <script src="profile/profileController.js"></script>
+    <script src="cart/cartController.js"></script>
+    <script src="orders/ordersController.js"></script>
+    <script src="product/productController.js"></script>
+    <script src="users/usersController.js"></script>
+    <script src="registration/registrationController.js"></script>
+    <script src="keycloakController.js"></script>
+    <title>Market</title>
+    <style>
+        select {
+            height: calc(1.5em + .75rem + 2px);
+            padding: .375rem 1.75rem .375rem .75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            vertical-align: middle;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+    </style>
+</head>
+<body>
+<ng-view></ng-view>
+</body>
+</html>

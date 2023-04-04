@@ -1,0 +1,77 @@
+<div class="container"  ng-controller="authorityController">
+    <h1 align="center">Профиль пользователя {{editUser.username}}</h1>
+
+    <table class="table" cellpadding="0" cellspacing="0" width="80%" align="center">
+        <tr>
+            <td><b>Перейти:</b></td>
+            <td>&nbsp;</td>
+            <td width="35%">
+                <button type="button" class="btn btn-outline-info btn-sm" style="width: 100%;" ng-click="showUsersPage()">К списку пользователей</button>
+            </td>
+        </tr>
+    </table>
+
+    <h3 align="center">Данные регистрации</h3>
+    <table class="table table-striped" width="80%" align="center" >
+        <thead class="thread-light">
+        <tr>
+            <td><b>Поля профиля</b></td><td colspan="4"><b>Значение</b></td>
+        </tr>
+        </thead>
+        <tr>
+            <td><b><i>Имя пользователя (логин):</i></b></td><td colspan="4"><b>{{editUser.username}}</b></td>
+        </tr>
+        <tr>
+            <td><b><i>Номер регистрации:</i></b></td><td colspan="4"><b>{{editUser.id}}</b></td>
+        </tr>
+        <tr>
+            <td><b><i>Пароль пользователя:</i></b></td><td colspan="4"><b>{{editUser.password}}</b></td>
+        </tr>
+        <tr>
+            <td><b><i>Имя:</i></b></td><td colspan="4"><b>{{editUser.firstname}}</b></td>
+        </tr>
+        <tr>
+            <td><b><i>Фамилия:</i></b></td><td colspan="4"><b>{{editUser.lastname}}</b></td>
+        </tr>
+        <tr>
+            <td><b><i>Адрес электронной почты:</i></b></td><td colspan="4"><b>{{editUser.email}}</b></td>
+        </tr>
+        <tr>
+            <td><b><i>Назначенные роли:</i></b></td><td><b>id роли</b></td><td colspan="2" align="left"><b>Имя роли</b></td><td align="right"><b>Действие</b></td>
+        </tr>
+        <tr><td>&nbsp;</td>
+            <td colspan="4">
+                <table class="table table-striped" align="center">
+                    <tr ng-repeat="r in editUserCurrentRoles">
+                        <td class="thread-light"><b>{{r.id}}</b></td>
+                        <td width="25%">&nbsp;</td>
+                        <td><b>{{r.name}}</b></td>
+                        <td align="right"><button class="btn btn-danger" ng-click="deleteRole(r.id)">Удалить</button></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" ><button class="btn btn-success" ng-click="restoreRole()">Отменить</button></td></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr><td><b>Добавить роль:</b></td>
+            <form novalidate>
+                <td colspan="3" align="center">
+                    <select class="form-select" id="addedRoleId" name="addedRoleId" ng-init = "selected" ng-model="addedRoleId"  required>
+                        <option ng-selected="selected" value="" selected>Выбор новой роли</option>
+                        <option ng-repeat="r in newRoles" value="{{r.id}}"><div>{{r.id}}</div><div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><div>{{r.name}}</div></option>
+                    </select>
+                </td>
+                <td align="left"><button class="btn btn-primary" type="button" ng-click="addNewRole()">Добавить</button></td>
+            </form>
+        </tr>
+        <tr>
+            <td colspan="4"><b>Сохранить изменения в базу данных:</b></td>
+            <td colspan="2" align="left"><button class="btn btn-warning" type="button" ng-click="saveEditedProfile()">Сохранить</button></td>
+        </tr>
+        </tbody>
+
+    </table>
+</div>
+
+

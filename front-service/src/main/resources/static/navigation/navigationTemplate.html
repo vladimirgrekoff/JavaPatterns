@@ -1,0 +1,35 @@
+<div class="container"  ng-controller="navigationController">
+    <table class="table table-striped" width="80%" align="center">
+        <thead class="thread-light">
+        <tr>
+            <td align="center"><h1><b>{{showCurrentUserName()}}, Вы можете перейти:</b></h1></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-show="hasRole('ROLE_USER')">
+            <td><b>на страницу с профилем:</b></td>
+            <td><button  class="btn btn-primary" style="width: 100%;" ng-click="showProfilePage()">Профиль</button></td>
+        </tr>
+        <tr ng-show="hasRole('ROLE_USER')">
+            <td><b>на страницу выбора товаров:</b></td>
+            <td><button class="btn btn-primary" style="width: 100%;" ng-click="showCartPage()">Выбор товаров</button></td>
+        </tr>
+        <tr ng-show="hasRole('ROLE_USER')">
+            <td><b>на страницу оформленных заказов:</b></td>
+            <td><button class="btn btn-primary" style="width: 100%;" ng-click="showOrdersPage()">Мои заказы</button></td>
+        </tr>
+        <tr ng-show="hasRole('ROLE_MANAGER')">
+            <td><b>на страницу редактирования списка товаров:</b></td>
+            <td><button class="btn btn-primary" style="width: 100%;" ng-click="showProductsPage()">Правка списка</button></td>
+        </tr>
+        <tr ng-show="hasRole('ROLE_ADMIN')">
+            <td><b>на страницу редактирования списка пользователей:</b></td>
+            <td><button class="btn btn-primary" style="width: 100%;" ng-click="showUsersPage()">Правка списка</button></td>
+        </tr>
+        <tr>
+            <td><b>покинуть сайт:</b></td>
+            <td><button class="btn btn-danger" style="width: 100%;" ng-click="tryLogout()">Выход</button></td>
+        </tr>
+        </tbody>
+    </table>
+</div>

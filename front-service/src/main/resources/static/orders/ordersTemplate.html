@@ -1,0 +1,64 @@
+<div class="container" ng-controller="ordersController">
+    <p></p>
+    <h3>Заказы</h3>
+    <table class="table" cellpadding="0" cellspacing="0" width="80%" align="center">
+        <td width="60%">
+            <table align="center">
+                <tr>
+                    <td><b>Перейти:</b></td>
+                    <td width="30%">
+                        <button type="button" class="btn btn-outline-info btn-sm" style="width: 100%;" ng-click="showCartPage()">К выбору товаров</button>
+                    </td>
+                    <td width="30%">
+                        <button type="button" class="btn btn-outline-info btn-sm" style="width: 100%;" ng-click="showNavigationPage()">Страница навигации</button>
+                    </td>
+                    <td width="30%">
+<!--                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" onclick="location.href = 'logout'">Выход</button>-->
+                        <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" ng-click="tryLogout()">Выход</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </table>
+    <p></p>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <td><b>ID заказа</b></td>
+            <td><b>Дата заказа</b></td>
+            <td><b>Цена</b></td>
+        </tr>
+        </thead>
+        <tbody  ng-repeat="o in orders">
+        <tr>
+            <td>{{o.id}}</td>
+            <td>{{o.createdAt}}</td>
+            <td>{{o.totalPrice}}</td>
+            <td>
+                <button class="btn btn-outline-success" ng-click="showDetails = !showDetails">Детали</button>
+            </td>
+            </td>
+        </tr>
+        <tr ng-show="showDetails">
+                <tr ng-show="showDetails">
+                    <td align="center"><b>ID</b></td>
+                    <td align="left"><b>Наименование</b></td>
+                    <td align="center"><b>Количество</b></td>
+                    <td align="left"><b>Цена</b></td>
+                </tr>
+                <tr ng-show="showDetails" ng-repeat="item in o.items">
+                    <td align="center">{{item.productId}}</td>
+                    <td align="left">{{item.productTitle}}</td>
+                    <td align="center">{{item.quantity}}</td>
+                    <td align="left">{{item.pricePerProduct}}</td>
+                </tr>
+            <tr ng-show="showDetails">
+                <td align="center"><b><i>Сумма:</i></b></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td align="left"><b>{{o.totalPrice}}</b></td>
+            </tr>
+        </tr>
+        </tbody>
+    </table>
+</div>

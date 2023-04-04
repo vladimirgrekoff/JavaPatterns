@@ -1,0 +1,71 @@
+<div class="container"  ng-controller="usersController">
+    <h1 align="center">Правка списка пользователей</h1>
+    <table class="table" cellpadding="0" cellspacing="0" width="80%" align="center">
+            <td width="60%">
+                <table align="center">
+                    <tr>
+                        <td><b>Перейти:</b></td>
+                        <td>&nbsp;</td>
+                        <td width="35%">
+                            <button type="button" class="btn btn-outline-info btn-sm" style="width: 100%;" ng-click="showNavigationPage()">Страница навигации</button>
+                        </td>
+                        <td width="35%">
+<!--                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" onclick="location.href = 'logout'">Выход</button>-->
+                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" ng-click="tryLogout()">Выход</button>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+    </table>
+
+    <h3 align="center">Список пользователей</h3>
+    <table class="table table-striped" width="80%" align="left" >
+        <thead class="thread-light">
+        <tr>
+            <td><b>ID</b></td>
+            <td><b>Имя пользователя</b></td>
+            <td align="center"><b>Пароль</b></td>
+            <td><b>email</b></td>
+            <td><b>Роли пользователя</b></td>
+            <td colspan="2" align="center"><b>Действие</b></td>
+        </tr>
+        </thead>
+        <tr ng-repeat="u in UsersList">
+            <td>{{u.id}}</td>
+            <td>{{u.username}}</td>
+            <td>{{u.password}}</td>
+            <td>{{u.email}}</td>
+            <td>{{allRolesToString(u.roles)}}</td>
+            <td><button class="btn btn-danger" ng-click="deleteUser(u.id)">Удалить</button></td>
+            <td ng-show="hasRole('ROLE_SUPERADMIN')"><button class="btn btn-warning" ng-click="editUserProfile(u.id)">Изменить</button></td>
+        </tr>
+        <tr>
+            <td colspan="4"><b><i>Всего пользователей в списке:</i></b></td>
+            <td colspan="3" align="left"><b>{{UsersList.length}}</b></td>
+        </tr>
+        </tbody>
+    </table>
+    <h3 align="center">Добавить нового пользователя</h3>
+    <table class="table table-hover" cellpadding="0" cellspacing="0" align="center">
+        <tr>
+            <td align="center"><b>Имя пользователя</b></td>
+            <td align="center"><b>Пароль</b></td>
+            <td align="center"><b>email</b></td>
+            <td align="center"><b>Роль пользователя</b></td>
+            <td align="center"><b>Действие</b></td>
+        </tr>
+        <tr>
+        </tr>
+        <tr>
+            <form novalidate>
+                <td><input class="form-control" type="text" ng-model="newUser.username" id="username" name="username" placeholder="Имя пользователя" required/></td>
+                <td><input class="form-control" type="text" ng-model="newUser.password" id="password" name="password" placeholder="Пароль" required/></td>
+                <td><input class="form-control" type="text" ng-model="newUser.email" id="email" name="email" placeholder="email" required/></td>
+                <td><input class="form-control" type="text" ng-model="newUser.roles" id="roles" name="roles" placeholder="ROLE_USER" readonly/></td>
+                <td><button class="btn btn-primary" type="button" ng-click="addNewUser()">Добавить в список</button></td>
+            </form>
+        </tr>
+        </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,42 @@
+server:
+  port: 8187
+  servlet:
+    context-path: /market-auth
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:mydatabase;MODE=PostgreSQL
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        ddl-auto: none
+        temp:
+          use_jdbc_metadata_defaults: false
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: false
+jwt:
+  secret: e8ukf967unw3r7u33b24bju7vs3k6h0tr5r33ff7fh4d2hh80ty4v96f2vm
+  lifetime: 36000000
+
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: login-market
+            authorization-grant-type: authorization_code
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8180/realms/SpringBootKeycloak
+            user-name-attribute: preferred_username
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/SpringBootKeycloak

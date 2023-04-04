@@ -1,0 +1,144 @@
+<div class="container" ng-controller="welcomeController">
+    <h1 align="center"><b>Добро пожаловать!</b></h1>
+    <p>&nbsp;</p>
+    <table class="table" cellpadding="0" cellspacing="0" width="80%" align="center">
+        <tr>
+            <td width="40%">
+                <form novalidate ng-submit="loadPageProducts(0, true, false)">
+                    <div class="form-floating input-group-sm">
+                        <input type="text" class="form-control" id="filterTitle" placeholder="Наименование продукта" ng-model="filter.part_title">
+                    </div>
+                    <p></p>
+                    <div class="form-floating input-group-sm">
+                        <input type="number" class="form-control" id="filterMinPrice" placeholder="Мин. цена" ng-model="filter.min_price">
+                    </div>
+                    <p></p>
+                    <div class="form-floating input-group-sm">
+                        <input type="number" class="form-control" id="filterMaxPrice" placeholder="Макс. цена" ng-model="filter.max_price">
+                    </div>
+                    <p></p>
+                    <button class="btn btn-outline-warning btn-sm" style="width: 100%;" type="submit">Применить</button>
+                </form>
+            </td>
+            <!--        </tr>-->
+            <td width="60%">
+                <table align="center" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td ><b>Войти:</b></td>
+                        <td>&nbsp;</td>
+                        <td width="35%" colspan="2">
+                            <button type="button" class="btn btn-outline-info btn-sm" style="width: 100%;" ng-click="showLoginPage()">Вход</button>
+                        </td>
+                        <td width="35%" colspan="2">
+                            <!--                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" onclick="location.href = 'logout'">Выход</button>-->
+                            <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" ng-click="showRegistrationPage()">Регистрация</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="30%" colspan="2"><b>На странице:</b></td>
+                        <form class="form-floating input-group">
+                            <td width="25%" align="right">
+                                <input class="form-control" type="number" ng-model="numberProduct" id="numberOnPage" name="numberOnPage" placeholder={{applyValue}} required/>
+                            </td>
+                            <td width="10%" align="right">
+                                <button class="btn btn-outline-primary" ng-click="applyNumberProducts()">OK</button>
+                            </td>
+                        </form>
+                        <td width="35%" align="right" colspan="2">
+                            <button class="btn btn-outline-primary" ng-click="loadAllProducts()">показать все</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><b>Страницы:</b></td>
+                        </td>
+                        <td width="25%" align="left">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(0, true, false)">&nbsp;&nbsp;&nbsp;первая&nbsp;&nbsp;&nbsp;</button>
+                        </td>
+                        <td width="10%" align="right">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(-1, false, false)">&lt;&lt;</button>
+                        </td>
+                        <td width="10%" align="left">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(1, false, false)">&gt;&gt;</button>
+                        </td>
+                        <td width="25%" align="right">
+                            <button class="btn btn-outline-primary" ng-click="loadPageProducts(0, false, true)">последняя</button>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+    <h3 align="center">Список продуктов</h3>
+    <table class="table table-striped" width="80%" align="center">
+        <thead class="thead-light">
+        <tr>
+            <td><b>ID</b></td>
+            <td width="10%">&nbsp;</td>
+            <td><b>Наименование продукта</b></td>
+            <td width="10%">&nbsp;</td>
+            <td><b>Стоимость</b></td>
+
+            <td ng-show="showPreOrder"><b>Действие</b></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="p in ProductsList">
+            <td>{{p.id}}</td>
+            <td width="10%">&nbsp;</td>
+            <td>{{p.title}}</td>
+            <td width="10%">&nbsp;</td>
+            <td>{{p.price}}</td>
+
+            <td ng-show="showPreOrder"><button class="btn btn-success" ng-click="addProductToCart(p.id)">В корзину</button></td>
+        </tr>
+        <tr>
+            <td colspan="2" ><b><i>Всего продуктов на странице:</i></b></td>
+            <td>&nbsp;</td>
+            <td  colspan="2"><b>{{ProductsList.length}}</b></td>
+        </tr>
+        </tbody>
+    </table>
+    <p>&nbsp;</p>
+    <div align="center"  ng-show="!showPreOrder">
+        <button class="btn btn-success" ng-click="showPreOrder = !showPreOrder">Сделать предварительный заказ</button>
+    </div>
+    <div align="center"  ng-show="showPreOrder">
+        <!--        <button class="btn btn-warning" ng-click="showPreOrder = !showPreOrder" n>Отказаться от выбора</button>-->
+        <button class="btn btn-warning" ng-click="showPreOrder = !showPreOrder;clearCart()">Отказаться от выбора</button>
+    </div>
+    <p>&nbsp;</p>
+    <div ng-show="showPreOrder">
+        <h4 align="center">Предварительный заказ будет добавлен в корзину после входа в магазин</h4>
+        <table class="table table-hover" cellpadding="0" cellspacing="0" ng-model="ProductsInCart">
+            <tr>
+                <td align="center"><b>ID</b></td>
+                <td align="center"><b>Наименование</b></td>
+                <td align="center"><b>Количество</b></td>
+                <td align="center"><b>Цена</b></td>
+                <td colspan="2" align="center"><b>Действие</b></td>
+            </tr>
+            <tr ng-repeat="item in cart.items">
+                <td align="center">{{item.productId}}</td>
+                <td align="left">{{item.productTitle}}</td>
+                <td align="center">{{item.quantity}}</td>
+                <td align="left">{{item.pricePerProduct + ' x ' + item.quantity + ' = ' + item.price}}</td>
+                <td align="center"><button type="button" class="btn btn-primary" ng-click="addProductToCart(item.productId)">Добавить</button></td>
+                <td align="center"><button type="button" class="btn btn-warning" ng-click="deleteProductFromCart(item.productId)">Удалить</button></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center"><b><i>Итого:</i></b></td>
+                <td>&nbsp;</td>
+                <td align="left"><b>{{cart.totalPrice}}</b></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <!--        <td>&nbsp;</td>-->
+                <td colspan="2"><b><i>Очистка корзины:</i></b></td>
+                <td align="center"><button type="button" class="btn btn-danger" ng-click="clearCart()">Очистить корзину</button></td>
+                <td align="center"><button type="button" class="btn btn-success" ng-click="guestCreateOrder()">Оформить заказ</button></td>
+            </tr>
+        </table>
+    </div>
+</div>
