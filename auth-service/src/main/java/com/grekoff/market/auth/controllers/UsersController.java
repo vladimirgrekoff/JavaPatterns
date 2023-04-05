@@ -30,9 +30,7 @@ import java.util.List;
 public class UsersController {
 
     private final UsersService usersService;
-    @Autowired
-    private UserConverter userConverter;
-
+    private final UserConverter userConverter;
     private final UserValidator userValidator;
 
 
@@ -69,9 +67,7 @@ public class UsersController {
     @GetMapping("/{id}")
     public UserDto getUserById(@PathVariable @Parameter(description = "Идентификатор пользователя", required = true)  Long id) {
         User user = usersService.findById(id).orElseThrow(()-> new ResourceNotFoundException("Пользователь отсутствует в списке, id: " + id));
-        UserDto userDto = userConverter.entityToDto(user);
-        userDto.setPassword("PROTECTED");
-        return userDto;
+        return userConverter.entityToDto(user);
     }
 
 

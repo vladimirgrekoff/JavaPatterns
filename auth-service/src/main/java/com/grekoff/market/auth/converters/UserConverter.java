@@ -20,6 +20,15 @@ public class UserConverter {
     }
 
     public UserDto entityToDto(User user) {
-        return new UserDto(user.getId(), user.getUsername(), "PROTECTED", user.getFirstname(), user.getLastname(), user.getEmail(), user.getRoles().stream().map(roleConverter::entityToDto).collect(Collectors.toList()));
+        UserDto userDto = UserDto.newBuilder()
+                .withId(user.getId())
+                .withUsername(user.getUsername())
+                .withPassword("PROTECTED")
+                .withFirstname(user.getFirstname())
+                .withLastname(user.getLastname())
+                .withEmail(user.getEmail())
+                .withRoles(user.getRoles().stream().map(roleConverter::entityToDto).collect(Collectors.toList()))
+                .build();
+        return userDto;
     }
 }

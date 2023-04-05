@@ -16,6 +16,7 @@ app.controller("registrationController", function($rootScope, $scope, $http, $lo
     console.log('name=' + $scope.user.username + ', ' + 'email=' + $scope.user.email + ', ' + 'firstname=' + $scope.user.firstname + ', ' + 'lastname=' + $scope.user.lastname + ', ' + 'password=' + $scope.user.password + ', ' + 'confirmPassword=' + $scope.user.confirmPassword);//////////
         $http.post(contextPath + '/registration', $scope.user)
             .then(function successCallback(response) {
+            console.log(response.data);////////////////////////////////////////////////////
                 if (response.data) {
                     $scope.user.username = null;
                     $scope.user.email = null;

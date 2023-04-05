@@ -2,6 +2,7 @@ package com.grekoff.market.api.core;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Schema(description = "Модель продукта")
@@ -15,32 +16,36 @@ public class ProductDto {
     @Schema(description = "Категория продукта",  requiredMode = Schema.RequiredMode.REQUIRED, example = "Продукты")
     private String categoryTitle;
 
+
+
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
     public String getCategoryTitle() {
         return categoryTitle;
+    }
+
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public void setCategoryTitle(String categoryTitle) {

@@ -7,6 +7,13 @@ import com.grekoff.market.core.entities.OrderItem;
 @Component
 public class OrderItemConverter {
     public OrderItemDto entityToDto(OrderItem o) {
-        return new OrderItemDto(o.getProduct().getId(), o.getProduct().getTitle(), o.getQuantity(), o.getPricePerProduct(), o.getPrice());
+        OrderItemDto orderItemDto = OrderItemDto.builder()
+                .productId(o.getProduct().getId())
+                .productTitle(o.getProduct().getTitle())
+                .quantity(o.getQuantity())
+                .pricePerProduct(o.getPricePerProduct())
+                .price(o.getPrice())
+                .build();
+        return orderItemDto;
     }
 }

@@ -3,6 +3,7 @@ package com.grekoff.market.auth.controllers;
 import com.grekoff.market.api.auth.RoleDto;
 import com.grekoff.market.api.auth.UserDto;
 import com.grekoff.market.auth.converters.RoleConverter;
+import com.grekoff.market.auth.converters.UserConverter;
 import com.grekoff.market.auth.entities.User;
 import com.grekoff.market.auth.exceptions.AppError;
 import com.grekoff.market.auth.services.UsersService;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public class ProfileController {
     private final UsersService usersService;
     private final RoleConverter roleConverter;
+    private final UserConverter userConverter;
 
     // http://localhost:8187/market-auth/api/v1/profile
 
@@ -47,7 +49,7 @@ public class ProfileController {
     @GetMapping("/get")
     public UserDto getCurrentUserInfo(@RequestHeader @Parameter(description = "username", required = true) String username) {
          User user = usersService.findByUsername(username).get();
-        return new UserDto(user.getId(), user.getUsername(), "PROTECTED", user.getFirstname(), user.getLastname(), user.getEmail(), user.getRoles().stream().map(roleConverter::entityToDto).collect(Collectors.toList()));
+         return userConverter.entityToDto(user);
     }
 
     @Operation(
