@@ -5,8 +5,11 @@ import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
 import com.grekoff.market.core.entities.Product;
 import com.grekoff.market.core.exceptions.ResourceNotFoundException;
+import com.grekoff.market.core.proxy.UsersProductsService;
 import com.grekoff.market.core.repositories.ProductsRepository;
 import com.grekoff.market.core.services.specifications.ProductsSpecifications;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,15 +23,23 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ProductsService {
-    private final ProductsRepository productsRepository;
-    private final CategoryService categoryService;
-    private final ProductConverter productConverter;
+//@AllArgsConstructor
+//@NoArgsConstructor
+public class ProductsService implements UsersProductsService {
+
+        private final ProductsRepository productsRepository;
+        private final CategoryService categoryService;
+        private final ProductConverter productConverter;
 
     public int page = 0;
 
 
+
+
+
+
     public List<ProductDto> findAll() {
+        System.out.println("В репозиторий productsService.findAll ");////////////////////////////////////////////////
         List<ProductDto> productDtoList = new ArrayList<>();
         List<Product> productList = productsRepository.findAll();
         for (Product p: productList) {
@@ -40,7 +51,9 @@ public class ProductsService {
     }
 
 
-    public Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last) {
+
+
+    public Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last,  Integer currentPage) {
 
         Long numberOfProducts = productsRepository.countProducts();
 
@@ -56,6 +69,10 @@ public class ProductsService {
             page = lastPage;
         }
         page = checkLastNumberPage(page, lastPage);
+
+        currentPage = page;
+
+        System.out.println("Страница " + currentPage);
 
         Specification<Product> spec = Specification.where(null);
 
@@ -100,7 +117,9 @@ public class ProductsService {
         }
     }
 
+
     public Optional<Product> findById(Long id) {
+        System.out.println("В репозиторий productsService.findById ");////////////////////////////////////////////////
         return productsRepository.findById(id);
     }
 

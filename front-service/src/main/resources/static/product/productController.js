@@ -14,6 +14,7 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
 
 
     $scope.defaultNumber = 5;
+    $scope.currentPage;
 
     if($localStorage.productsOnPage){
         $scope.applyValue = $localStorage.productsOnPage;
@@ -40,10 +41,18 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
         return limit;
     };
 
+    $scope.currentPageCheck = function(offset){
+        console.log('текущая ' + $scope.currentPage);//////////////////////////////////
+        $scope.currentPage = $scope.currentPage + offset;
+    return $scope.currentPage;
+    };
+
     $scope.loadPageProducts = function (offset, first, last) {
         limit = $scope.checkLimit();
+        let page;
+        page = $scope.currentPageCheck(offset);
         $http({
-            url: contextPath + '/products/pages',
+            url: contextPath + '/admin/products/pages',
             method: 'GET',
             params: {
                 min_price: $scope.filter ? $scope.filter.min_price : null,
@@ -52,15 +61,17 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
                 offset: offset,
                 limit: limit,
                 first: first,
-                last: last
+                last: last,
+                current_page: page
             }
         }).then(function (response) {
                 $scope.ProductsList = response.data.content;
+                console.log('текущая пришла ' + response.data.content);//////////////////////////////////
         });
     };
 
     $scope.loadAllProducts = function () {
-        $http.get(contextPath + '/products/all')
+        $http.get(contextPath + '/admin/products/all')
             .then(function (response) {
                 $scope.ProductsList = response.data;
             });
@@ -68,7 +79,7 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
 
     $scope.updateProduct = function (product, delta) {
         product.price = product.price + delta;
-        $http.put(contextPath + '/products', product)
+        $http.put(contextPath + '/admin/products', product)
             .then(function (response) {
                 product = null;
                 $scope.loadPageProducts();
@@ -80,7 +91,7 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
     $scope.addNewProduct = function () {
         if ($scope.isEmptyProductData() == false){
             $scope.newProduct.categoryTitle = $scope.categoryTitle;
-            $http.post(contextPath + '/products', $scope.newProduct)
+            $http.post(contextPath + '/admin/products', $scope.newProduct)
                 .then(function (response) {
                     $scope.newProduct.title = null;
                     $scope.newProduct.price = null;
@@ -113,7 +124,7 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
     };
 
     $scope.deleteProduct = function (productId) {
-        $http.delete(contextPath + '/products/' + productId)
+        $http.delete(contextPath + '/admin/products/' + productId)
             .then(function (response) {
                 $scope.loadPageProducts();
             });

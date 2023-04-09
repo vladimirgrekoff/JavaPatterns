@@ -2,8 +2,13 @@ package com.grekoff.market.core.controllers;
 
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
+import com.grekoff.market.core.entities.Product;
 import com.grekoff.market.core.exceptions.AppError;
 import com.grekoff.market.core.exceptions.ResourceNotFoundException;
+import com.grekoff.market.core.proxy.UsersProductsService;
+import com.grekoff.market.core.proxy.UsersProductsServiceProxy;
+import com.grekoff.market.core.repositories.ProductsRepository;
+import com.grekoff.market.core.services.CategoryService;
 import com.grekoff.market.core.services.ProductsService;
 import com.grekoff.market.core.validators.ProductValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,23 +20,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-
-//import org.hibernate.mapping.List;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/admin/products")
+@RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 @Tag(name = "Продукты", description = "Методы работы с продуктами")
-public class ProductsController {
-    private final ProductsService productsService;
+public class UsersProductsController {
     private final ProductConverter productConverter;
-    private final ProductValidator productValidator;
+    private final UsersProductsServiceProxy usersProductsServiceProxy;
+//    private final UsersProductsService usersProductsService;
 
-    // http://localhost:8189/market-core/api/v1/admin/products
+    // http://localhost:8189/market-core/api/v1/products
 
     @Operation(
             summary = "Запрос на получение полного списка продуктов",
@@ -44,7 +47,7 @@ public class ProductsController {
     )
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
-        return productsService.findAll();
+        return usersProductsServiceProxy.findAll();
     }
 
     @Operation(
@@ -77,7 +80,7 @@ public class ProductsController {
             @RequestParam(name = "current_page", defaultValue = "0") Integer currentPage
 
     ) {
-        return productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(p -> productConverter.entityToDto(p));
+        return usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
 
     }
 
@@ -96,48 +99,9 @@ public class ProductsController {
     )
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
-        return productConverter.entityToDto(productsService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
+        return productConverter.entityToDto(usersProductsServiceProxy.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
     }
 
-    @Operation(
-            summary = "Запрос на создание нового продукта",
-            responses = {
-                    @ApiResponse(
-                            description = "Продукт успешно создан", responseCode = "201"
-                    )
-            }
-    )
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createNewProducts(@RequestBody ProductDto productDto) {
-        productsService.createNewProduct(productDto);
-    }
 
-    @Operation(
-            summary = "Запрос на изменение параметров продукта",
-            responses = {
-                    @ApiResponse(
-                            description = "Успешный ответ", responseCode = "200"
-                    )
-            }
-    )
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void updateProduct(@RequestBody ProductDto productDto) {
-        productValidator.validate(productDto);
-        productsService.update(productDto);
-    }
 
-    @Operation(
-            summary = "Запрос на удаление продукта по id",
-            responses = {
-                    @ApiResponse(
-                            description = "Успешный ответ", responseCode = "200"
-                    )
-            }
-    )
-    @DeleteMapping("/{id}")
-    public void deleteProductById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
-        productsService.deleteById(id);
-    }
 }
