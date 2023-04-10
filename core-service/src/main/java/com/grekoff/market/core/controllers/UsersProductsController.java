@@ -1,5 +1,6 @@
 package com.grekoff.market.core.controllers;
 
+import com.grekoff.market.api.core.PageDto;
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
 import com.grekoff.market.core.entities.Product;
@@ -32,7 +33,6 @@ import java.util.Optional;
 public class UsersProductsController {
     private final ProductConverter productConverter;
     private final UsersProductsServiceProxy usersProductsServiceProxy;
-//    private final UsersProductsService usersProductsService;
 
     // http://localhost:8189/market-core/api/v1/products
 
@@ -61,7 +61,8 @@ public class UsersProductsController {
             }
     )
     @GetMapping("/pages")
-    public Page<ProductDto> getAllPagesProducts(
+//    public Page<ProductDto> getAllPagesProducts(
+    public PageDto<ProductDto> getAllPagesProducts(
             @Parameter(description = "Минимальная цена продукта")
             @RequestParam(name = "min_price", required = false) Integer minPrice,
             @Parameter(description = "Максимальная цена продукта")
@@ -80,8 +81,13 @@ public class UsersProductsController {
             @RequestParam(name = "current_page", defaultValue = "0") Integer currentPage
 
     ) {
-        return usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
+        Page<ProductDto> pageProductDto = usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
+        PageDto<ProductDto> response = new PageDto<>();
+        response.setPage(pageProductDto.getNumber());
+        response.setItems(pageProductDto.getContent());
+        response.setTotalPage(pageProductDto.getTotalPages());
 
+        return response;
     }
 
     @Operation(

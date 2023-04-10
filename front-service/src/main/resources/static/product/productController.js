@@ -15,6 +15,7 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
 
     $scope.defaultNumber = 5;
     $scope.currentPage;
+    $scope.pagesCount;
 
     if($localStorage.productsOnPage){
         $scope.applyValue = $localStorage.productsOnPage;
@@ -41,16 +42,35 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
         return limit;
     };
 
-    $scope.currentPageCheck = function(offset){
-        console.log('текущая ' + $scope.currentPage);//////////////////////////////////
-        $scope.currentPage = $scope.currentPage + offset;
-    return $scope.currentPage;
+
+
+    $scope.calculateCurrentPage = function(offset){
+        let page;
+        page = $scope.currentPage;
+        if (page == undefined || page == null){
+            page = 0;
+        }
+        page = page + offset;
+        if(page < 0){
+            page = 0;
+        }
+        if($scope.pagesCount != undefined){
+            if(page >= $scope.pagesCount - 1){
+                page = $scope.pagesCount - 1;
+            }
+        }
+        $scope.currentPage = page;
+        return $scope.currentPage;
     };
 
     $scope.loadPageProducts = function (offset, first, last) {
+        if (offset == undefined){
+            offset = 0;
+        }
         limit = $scope.checkLimit();
         let page;
-        page = $scope.currentPageCheck(offset);
+        page = $scope.calculateCurrentPage(offset);
+
         $http({
             url: contextPath + '/admin/products/pages',
             method: 'GET',
@@ -65,8 +85,9 @@ app.controller("productController", function($rootScope, $scope, $http, $locatio
                 current_page: page
             }
         }).then(function (response) {
-                $scope.ProductsList = response.data.content;
-                console.log('текущая пришла ' + response.data.content);//////////////////////////////////
+                $scope.currentPage = response.data.page;
+                $scope.pagesCount = response.data.totalPage;
+                $scope.ProductsList = response.data.items;
         });
     };
 

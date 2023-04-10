@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-@AllArgsConstructor
+//@AllArgsConstructor
 //@RequiredArgsConstructor
 public class UsersProductsServiceProxy implements UsersProductsService{
-    private static UsersProductsService usersProductsService;
+//    private static UsersProductsService usersProductsService;
+    private ProductsService productsService;
     private ProductsRepository productsRepository;
     private Map<String, Object> cache;
-    private ProductsService productsService;
     @Data
     @RequiredArgsConstructor
     private  class Object {
@@ -38,12 +38,12 @@ public class UsersProductsServiceProxy implements UsersProductsService{
     @Autowired
     public void setProductsService(ProductsService productsService) {
         this.productsService = productsService;
-        System.out.println("Ссылка productsService " + productsService );
+//        System.out.println("Ссылка productsService " + productsService );
     }
 
     public void setProductsRepository(ProductsRepository productsRepository) {
         this.productsRepository = productsRepository;
-        System.out.println("Ссылка productsRepository " + productsRepository );
+//        System.out.println("Ссылка productsRepository " + productsRepository );
     }
 
     @PostConstruct
@@ -55,20 +55,14 @@ public class UsersProductsServiceProxy implements UsersProductsService{
 
 
 
-    private void checkService() {
-        if (usersProductsService == null){
-            usersProductsService = productsService;
-        }
-    }
-
     @Override
     public List<ProductDto> findAll() {
         if (!cache.containsKey("findAll")) {
             Object cashedProductsService = new Object();
-            cashedProductsService.setProductDtoList(usersProductsService.findAll());
+            cashedProductsService.setProductDtoList(productsService.findAll());
             cache.put("findAll", cashedProductsService);
+//        System.out.println("кеширование: productsService.findAll()");
         }
-        System.out.println("cashedObject findAll: " + cache.get("findAll").getProductDtoList());
 
         return cache.get("findAll").getProductDtoList();
 //        return null;
@@ -77,14 +71,19 @@ public class UsersProductsServiceProxy implements UsersProductsService{
 
     @Override
     public Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage) {
-        checkService();
-        System.out.println("Страницы " + "minPrice " + minPrice + ", " + "maxPrice " + maxPrice + ", " + "partTitle " + partTitle + ", " + "offset " + offset + ", " + "size " + size + ", " + "first " + first + ", " + "last " + last + ", " + "currentPage " + currentPage);
+        String currentPageValue;
+        currentPageValue = (minPrice + ", " + maxPrice + ", " + partTitle + ", " + offset + ", " + size + ", " + first + ", " + last + ", " + currentPage).toString();
 
-        return usersProductsService.findAllPages(minPrice, maxPrice, partTitle, offset, size, first, last, currentPage);
+        if (!cache.containsKey(currentPageValue)) {
+            Object cashedPageProducts = new Object();
+            cashedPageProducts.setProductPage(productsService.findAllPages(minPrice, maxPrice, partTitle, offset, size, first, last, currentPage));
+            cache.put(currentPageValue, cashedPageProducts);
+//            System.out.println("кеширование cashedPageProducts");
+        }
+        return cache.get(currentPageValue).getProductPage();
     }
     @Override
     public Optional<Product> findById(Long id) {
-        String value = id.toString();
 
         if (!cache.containsKey("productsRepository")) {
             Object cashedProductsRepository = new Object();
@@ -92,9 +91,6 @@ public class UsersProductsServiceProxy implements UsersProductsService{
             cache.put("productsRepository", cashedProductsRepository);
 //            System.out.println("кеширование productsRepository");
         }
-//        System.out.println("кенированный productsRepository: " + cache.get("productsRepository").getCashedProductsRepository());
-//        System.out.println("количество продуктов в productsRepository: " + cache.get("productsRepository").getCashedProductsRepository().countProducts());
-
         return (cache.get("productsRepository").getCashedProductsRepository()).findById(id);
     }
 }

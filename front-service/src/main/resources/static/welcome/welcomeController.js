@@ -36,6 +36,8 @@ app.controller("welcomeController", function($rootScope, $scope, $http, $locatio
     };
 
     $scope.defaultNumber = 5;
+    $scope.currentPage;
+    $scope.pagesCount;
 
     if($localStorage.productsOnPage){
         $scope.applyValue = $localStorage.productsOnPage;
@@ -73,8 +75,33 @@ app.controller("welcomeController", function($rootScope, $scope, $http, $locatio
         $location.path('registration');
     };
 
+    $scope.calculateCurrentPage = function(offset){
+        let page;
+        page = $scope.currentPage;
+        if (page == undefined || page == null){
+            page = 0;
+        }
+        page = page + offset;
+        if(page < 0){
+            page = 0;
+        }
+        if($scope.pagesCount != undefined){
+            if(page >= $scope.pagesCount - 1){
+                page = $scope.pagesCount - 1;
+            }
+        }
+        $scope.currentPage = page;
+        return $scope.currentPage;
+    };
+
     $scope.loadPageProducts = function (offset, first, last) {
+        if (offset == undefined){
+            offset = 0;
+        }
         limit = $scope.checkLimit();
+        let page;
+        page = $scope.calculateCurrentPage(offset);
+
         $http({
             url: contextPath + '/products/pages',
             method: 'GET',
@@ -85,10 +112,13 @@ app.controller("welcomeController", function($rootScope, $scope, $http, $locatio
                 offset: offset,
                 limit: limit,
                 first: first,
-                last: last
+                last: last,
+                current_page: page
             }
         }).then(function (response) {
-                $scope.ProductsList = response.data.content;
+                $scope.currentPage = response.data.page;
+                $scope.pagesCount = response.data.totalPage;
+                $scope.ProductsList = response.data.items;
         });
     };
 

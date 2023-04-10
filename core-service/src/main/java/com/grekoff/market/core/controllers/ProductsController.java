@@ -1,5 +1,6 @@
 package com.grekoff.market.core.controllers;
 
+import com.grekoff.market.api.core.PageDto;
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
 import com.grekoff.market.core.exceptions.AppError;
@@ -58,7 +59,7 @@ public class ProductsController {
             }
     )
     @GetMapping("/pages")
-    public Page<ProductDto> getAllPagesProducts(
+    public PageDto<ProductDto> getAllPagesProducts(
             @Parameter(description = "Минимальная цена продукта")
             @RequestParam(name = "min_price", required = false) Integer minPrice,
             @Parameter(description = "Максимальная цена продукта")
@@ -77,8 +78,13 @@ public class ProductsController {
             @RequestParam(name = "current_page", defaultValue = "0") Integer currentPage
 
     ) {
-        return productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(p -> productConverter.entityToDto(p));
+        Page<ProductDto> pageProductDto = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
+        PageDto<ProductDto> response = new PageDto<>();
+        response.setPage(pageProductDto.getNumber());
+        response.setItems(pageProductDto.getContent());
+        response.setTotalPage(pageProductDto.getTotalPages());
 
+        return response;
     }
 
     @Operation(

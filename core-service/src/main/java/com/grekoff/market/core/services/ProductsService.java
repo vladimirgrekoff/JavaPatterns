@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.print.attribute.standard.PageRanges;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,6 @@ public class ProductsService implements UsersProductsService {
 
 
     public List<ProductDto> findAll() {
-        System.out.println("В репозиторий productsService.findAll ");////////////////////////////////////////////////
         List<ProductDto> productDtoList = new ArrayList<>();
         List<Product> productList = productsRepository.findAll();
         for (Product p: productList) {
@@ -70,9 +70,6 @@ public class ProductsService implements UsersProductsService {
         }
         page = checkLastNumberPage(page, lastPage);
 
-        currentPage = page;
-
-        System.out.println("Страница " + currentPage);
 
         Specification<Product> spec = Specification.where(null);
 
@@ -119,7 +116,6 @@ public class ProductsService implements UsersProductsService {
 
 
     public Optional<Product> findById(Long id) {
-        System.out.println("В репозиторий productsService.findById ");////////////////////////////////////////////////
         return productsRepository.findById(id);
     }
 
