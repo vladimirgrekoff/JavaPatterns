@@ -12,9 +12,4 @@ public class MarketAuthApplication {
     }
 
 
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
 }

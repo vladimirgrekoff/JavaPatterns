@@ -6,6 +6,7 @@ import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 public class MarketCoreApplication {
@@ -15,18 +16,5 @@ public class MarketCoreApplication {
 	}
 
 
-//	@Bean
-//	SpringDocConfiguration springDocConfiguration() {
-//		return new SpringDocConfiguration();
-//	}
-//
-//	@Bean
-//	SpringDocConfigProperties springDocConfigProperties() {
-//		return new SpringDocConfigProperties();
-//	}
-//
-//	@Bean
-//	ObjectMapperProvider objectMapperProvider(SpringDocConfigProperties springDocConfigProperties) {
-//		return new ObjectMapperProvider(springDocConfigProperties);
-//	}
+
 }

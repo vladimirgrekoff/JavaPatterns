@@ -37,4 +37,7 @@ integrations:
     read-timeout: 10000
     write-timeout: 5000
 
-
+#  redis:
+#    environment:
+#      - ALLOW_EMPTY_PASSWORD=yes
+#    port: 6379

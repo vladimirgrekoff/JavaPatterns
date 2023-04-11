@@ -3,9 +3,11 @@ package com.grekoff.market.core.proxy;
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.entities.Product;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 
 public interface UsersProductsService {
     List<ProductDto> findAll();
