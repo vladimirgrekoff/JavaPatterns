@@ -4,20 +4,20 @@ package com.grekoff.market.core.services;
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
 import com.grekoff.market.core.entities.Product;
+import com.grekoff.market.core.event.ChangedDBProductsEvent;
 import com.grekoff.market.core.exceptions.ResourceNotFoundException;
 import com.grekoff.market.core.proxy.UsersProductsService;
+import com.grekoff.market.core.publisher.Publisher;
 import com.grekoff.market.core.repositories.ProductsRepository;
 import com.grekoff.market.core.services.specifications.ProductsSpecifications;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.attribute.standard.PageRanges;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +27,13 @@ import java.util.Optional;
 //@AllArgsConstructor
 //@NoArgsConstructor
 public class ProductsService implements UsersProductsService {
-
         private final ProductsRepository productsRepository;
         private final CategoryService categoryService;
         private final ProductConverter productConverter;
+
+
+    @Autowired
+    Publisher eventPublisher;
 
     public int page = 0;
 
@@ -130,6 +133,7 @@ public class ProductsService implements UsersProductsService {
         product.setPrice(productDto.getPrice());
         product.setCategory(categoryService.findByTitle(productDto.getCategoryTitle()).orElseThrow(() -> new ResourceNotFoundException("Категория с названием: " + productDto.getCategoryTitle() + " не найдена")));
         productsRepository.save(product);
+        eventPublisher.publishChangedDBProductsEvent(new ChangedDBProductsEvent("Products Database changed"));
     }
 
 
@@ -140,6 +144,8 @@ public class ProductsService implements UsersProductsService {
         product.setPrice(productDto.getPrice());
         product.setTitle(product.getTitle());
         productsRepository.save(product);
+        eventPublisher.publishChangedDBProductsEvent(new ChangedDBProductsEvent("Products Database changed"));
+
     }
 
 }

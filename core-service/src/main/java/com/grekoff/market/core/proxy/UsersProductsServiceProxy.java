@@ -3,12 +3,13 @@ package com.grekoff.market.core.proxy;
 
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.entities.Product;
+import com.grekoff.market.core.event.ChangedDBProductsEvent;
+import com.grekoff.market.core.listener.Listener;
 import com.grekoff.market.core.repositories.ProductsRepository;
+import com.grekoff.market.core.services.CategoryService;
 import com.grekoff.market.core.services.ProductsService;
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,15 +26,22 @@ import java.util.*;
 @RequiredArgsConstructor
 //@NoArgsConstructor
 
-public class UsersProductsServiceProxy implements UsersProductsService{
-//    private static UsersProductsService usersProductsService;
+public class UsersProductsServiceProxy implements UsersProductsService, Listener {
+//   private static UsersProductsService usersProductsService;
+
     private ProductsService productsService;
+    private final CategoryService categoryService;
     private ProductsRepository productsRepository;
     private RedisTemplate<String, Object> redisTemplate;
     private Map<String, Object> cache;
 
 //    @Autowired
     private final JedisConnectionFactory jedisConnectionFactory;
+
+//    public CategoryService getCategoryService() {
+//        return categoryService;
+//    }
+
     @Data
     private static class Object {
         ProductsRepository cashedProductsRepository;
@@ -52,6 +60,7 @@ public class UsersProductsServiceProxy implements UsersProductsService{
 //        System.out.println("Ссылка productsRepository " + productsRepository );
     }
 
+
     @PostConstruct
     public void init(){
         this.cache = new HashMap<>();
@@ -66,6 +75,17 @@ public class UsersProductsServiceProxy implements UsersProductsService{
 //        System.out.println("ValueSerializer : " + redisTemplate.getValueSerializer());
     }
 
+
+    @Override
+    public void onEventReceived(ChangedDBProductsEvent event) {
+//        System.out.println("ПРОИЗОШЛО СОБЫТИЕ " + event.getMessage());
+        if (cache.containsKey("findAll")){
+            Object newCashedProductsService = new Object();
+            newCashedProductsService.setProductDtoList(productsService.findAll());
+            Object oldCashedProductsService = cache.get("findAll");
+            cache.replace("findAll", oldCashedProductsService, newCashedProductsService);
+        }
+    }
 
 
     @Override
@@ -88,7 +108,7 @@ public class UsersProductsServiceProxy implements UsersProductsService{
     public Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage) {
         String currentPageValue;
 //        currentPageValue = (minPrice + ", " + maxPrice + ", " + partTitle + ", " + offset + ", " + size + ", " + first + ", " + last + ", " + currentPage).toString();
-        currentPageValue = (minPrice + ", " + maxPrice + ", " + partTitle + ", "  + currentPage).toString();
+        currentPageValue = (minPrice + ", " + maxPrice + ", " + partTitle + ", " + first + ", " + last + ", "  + currentPage).toString();
 
         if (!cache.containsKey(currentPageValue)) {
 //        if (!redisTemplate.hasKey(currentPageValue)) {
