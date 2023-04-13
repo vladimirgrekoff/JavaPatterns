@@ -29,9 +29,9 @@ import java.util.*;
 public class UsersProductsServiceProxy implements UsersProductsService, Listener {
 //   private static UsersProductsService usersProductsService;
 
-    private ProductsService productsService;
+    private final ProductsService productsService;
     private final CategoryService categoryService;
-    private ProductsRepository productsRepository;
+    private final ProductsRepository productsRepository;
     private RedisTemplate<String, Object> redisTemplate;
     private Map<String, Object> cache;
 
@@ -49,16 +49,16 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
         Page<Product> productPage;
     }
 
-    @Autowired
-    public void setProductsService(ProductsService productsService) {
-        this.productsService = productsService;
-//        System.out.println("Ссылка productsService " + productsService );
-    }
-    @Autowired
-    public void setProductsRepository(ProductsRepository productsRepository) {
-        this.productsRepository = productsRepository;
-//        System.out.println("Ссылка productsRepository " + productsRepository );
-    }
+//    @Autowired
+//    public void setProductsService(ProductsService productsService) {
+//        this.productsService = productsService;
+////        System.out.println("Ссылка productsService " + productsService );
+//    }
+//    @Autowired
+//    public void setProductsRepository(ProductsRepository productsRepository) {
+//        this.productsRepository = productsRepository;
+////        System.out.println("Ссылка productsRepository " + productsRepository );
+//    }
 
 
     @PostConstruct
@@ -70,6 +70,9 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
         redisTemplate.setConnectionFactory(jedisConnectionFactory);
         redisTemplate.afterPropertiesSet();
 
+//        System.out.println("Ссылка categoryService " + categoryService );
+//        System.out.println("Ссылка productsService " + productsService );
+//        System.out.println("Ссылка productsRepository " + productsRepository );
 //        System.out.println("ConnectionFactory : " + redisTemplate.getConnectionFactory());
 //        System.out.println("KeySerializer : " + redisTemplate.getKeySerializer());
 //        System.out.println("ValueSerializer : " + redisTemplate.getValueSerializer());
@@ -78,12 +81,14 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
 
     @Override
     public void onEventReceived(ChangedDBProductsEvent event) {
-//        System.out.println("ПРОИЗОШЛО СОБЫТИЕ " + event.getMessage());
-        if (cache.containsKey("findAll")){
-            Object newCashedProductsService = new Object();
-            newCashedProductsService.setProductDtoList(productsService.findAll());
-            Object oldCashedProductsService = cache.get("findAll");
-            cache.replace("findAll", oldCashedProductsService, newCashedProductsService);
+        System.out.println(event.getMessage());///////////////////////////////////////////////
+        cache.clear();
+        if (redisTemplate.hasKey("findAll")) {
+            Object cashedProductsService = new Object();
+            cashedProductsService.setProductDtoList(productsService.findAll());
+//            cache.put("findAll", cashedProductsService);
+            redisTemplate.opsForValue().set("findAll", cashedProductsService);
+//        System.out.println("кеширование: productsService.findAll()");
         }
     }
 
@@ -100,7 +105,6 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
         }
         return cache.get("findAll").getProductDtoList();
 //        return Objects.requireNonNull(redisTemplate.opsForValue().get("findAll")).getProductDtoList();
-//        return null;
     }
 
 
@@ -108,7 +112,7 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
     public Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage) {
         String currentPageValue;
 //        currentPageValue = (minPrice + ", " + maxPrice + ", " + partTitle + ", " + offset + ", " + size + ", " + first + ", " + last + ", " + currentPage).toString();
-        currentPageValue = (minPrice + ", " + maxPrice + ", " + partTitle + ", " + first + ", " + last + ", "  + currentPage).toString();
+        currentPageValue = (minPrice + "_" + maxPrice + "_" + partTitle + "_" + first + "_" + last + "_"  + currentPage).toString();
 
         if (!cache.containsKey(currentPageValue)) {
 //        if (!redisTemplate.hasKey(currentPageValue)) {
