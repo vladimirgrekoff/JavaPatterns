@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +46,19 @@ public class UsersProductsController {
                     )
             }
     )
+//    @GetMapping("/all")
+//    public List<ProductDto> getAllProducts() {
+//        return usersProductsServiceProxy.findAll();
+//    }
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
-        return usersProductsServiceProxy.findAll();
+        List<ProductDto> productDtoList = new ArrayList<>();
+        List<Product> productList = usersProductsServiceProxy.findAll();
+        for (Product p: productList) {
+            ProductDto productDto = productConverter.entityToDto(p);
+            productDtoList.add(productDto);
+        }
+        return productDtoList;
     }
 
     @Operation(
@@ -82,11 +93,12 @@ public class UsersProductsController {
 
     ) {
         Page<ProductDto> pageProductDto = usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
+//        Page<ProductDto> pageProductDto = usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         PageDto<ProductDto> response = new PageDto<>();
         response.setPage(pageProductDto.getNumber());
         response.setItems(pageProductDto.getContent());
         response.setTotalPage(pageProductDto.getTotalPages());
-
+//        return usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         return response;
     }
 
@@ -106,6 +118,7 @@ public class UsersProductsController {
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
         return productConverter.entityToDto(usersProductsServiceProxy.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
+//        return usersProductsServiceProxy.findById(id);
     }
 
 

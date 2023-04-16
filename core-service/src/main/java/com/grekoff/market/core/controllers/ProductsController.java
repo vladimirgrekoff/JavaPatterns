@@ -3,8 +3,10 @@ package com.grekoff.market.core.controllers;
 import com.grekoff.market.api.core.PageDto;
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
+import com.grekoff.market.core.entities.Product;
 import com.grekoff.market.core.exceptions.AppError;
 import com.grekoff.market.core.exceptions.ResourceNotFoundException;
+import com.grekoff.market.core.mappers.ProductMapper;
 import com.grekoff.market.core.services.ProductsService;
 import com.grekoff.market.core.validators.ProductValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 //import org.hibernate.mapping.List;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,6 +33,7 @@ import java.util.List;
 public class ProductsController {
     private final ProductsService productsService;
     private final ProductConverter productConverter;
+    private final ProductMapper productMapper;
     private final ProductValidator productValidator;
 
     // http://localhost:8189/market-core/api/v1/admin/products
@@ -45,7 +49,20 @@ public class ProductsController {
     )
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
-        return productsService.findAll();
+//        List<ProductDto> productDtoList = new ArrayList<>();
+//        List<Product> productList = productsService.findAll();
+//        for (Product p: productList) {
+//            ProductDto productDto = productConverter.entityToDto(p);
+//            productDtoList.add(productDto);
+//        }
+//        return productDtoList;
+
+        return productsService.findAll().stream()
+                .map(productMapper::mapToDto)
+                .toList();
+
+//        return productsService.findAll();
+
     }
 
     @Operation(
@@ -79,11 +96,12 @@ public class ProductsController {
 
     ) {
         Page<ProductDto> pageProductDto = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
+//        Page<ProductDto> pageProductDto = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         PageDto<ProductDto> response = new PageDto<>();
         response.setPage(pageProductDto.getNumber());
         response.setItems(pageProductDto.getContent());
         response.setTotalPage(pageProductDto.getTotalPages());
-
+//        PageDto<ProductDto> response = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         return response;
     }
 
@@ -103,6 +121,7 @@ public class ProductsController {
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
         return productConverter.entityToDto(productsService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
+//        return productsService.findById(id);
     }
 
     @Operation(
