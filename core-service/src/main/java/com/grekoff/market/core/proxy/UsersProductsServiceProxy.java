@@ -2,6 +2,9 @@ package com.grekoff.market.core.proxy;
 
 
 //import com.grekoff.market.core.entities.Page;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.grekoff.market.core.entities.Product;
 import com.grekoff.market.core.event.ChangedDBProductsEvent;
 import com.grekoff.market.core.listener.Listener;
@@ -10,11 +13,23 @@ import com.grekoff.market.core.services.CategoryService;
 import com.grekoff.market.core.services.ProductsService;
 import jakarta.annotation.PostConstruct;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.data.redis.serializer.OxmSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
 
 @Service
 //@AllArgsConstructor
@@ -27,11 +42,11 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
     private final ProductsService productsService;
     private final CategoryService categoryService;
     private final ProductsRepository productsRepository;
-//    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
     private Map<String, Object> cacheData;
 
-//    @Autowired
-//    private final JedisConnectionFactory jedisConnectionFactory;
+    @Autowired
+    private final JedisConnectionFactory jedisConnectionFactory;
 
 //    public CategoryService getCategoryService() {
 //        return categoryService;
@@ -47,22 +62,58 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
 ////        Page<ProductDto> productDtoPage;
 ////        PageDto<ProductDto> productDtoPageDto;
 //    }
-    @Data
-    private class Object {
-        Optional<Product> productOptional;
-        List<Product> productList;
-        Page<Product> productPage;
-}
 
 //    @RequiredArgsConstructor
-    @Cacheable
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @Jacksonized
+//    @AllArgsConstructor
+//    @NoArgsConstructor
+    @Data
+    public static class Object implements Serializable {
+        Optional<Product> productOptional = Optional.of(new Product());
+        List<Product> productList = new ArrayList<>();
+        Page<Product> productPage;
+
+//    public void setaClass(Class aClass) {
+//        this.aClass = aClass;
+//    }
+
+    public void setProductOptional(Optional<Product> productOptional) {
+        this.productOptional = productOptional;
+    }
+
+    public void setProductList(List<Product> productList) {
+        this.productList = productList;
+    }
+
+    public void setProductPage(Page<Product> productPage) {
+        this.productPage = productPage;
+    }
+
+    public Object() {
+        }
+    }
+
+//    @RequiredArgsConstructor
+
+//    @Cacheable
+//    @AllArgsConstructor
+    @Jacksonized
     @Getter
     @Setter
     public class Cache extends Object {
         public Map<String, Object> cacheData;
 
+        public Cache() {
+            this.cacheData = new HashMap<>();
+        }
+
+        public Map<String, Object> getCacheData() {
+            return this.cacheData;
+        }
+
+        public void setCacheData(final Map<String, Object> cacheData) {
+            this.cacheData = cacheData;
+        }
     }
 
 //    @Autowired
@@ -80,11 +131,20 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
     @PostConstruct
     public void init(){
         this.cacheData = new HashMap<>();
-//        this.redisTemplate = new RedisTemplate<>();
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-////        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-//        redisTemplate.setConnectionFactory(jedisConnectionFactory);
-//        redisTemplate.afterPropertiesSet();
+        this.redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        Jackson2JsonRedisSerializer serializer = new Jackson2JsonRedisSerializer(UsersProductsServiceProxy.Object.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.EXISTING_PROPERTY);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//        serializer.setObjectMapper(objectMapper);
+        redisTemplate.setValueSerializer(serializer);
+        redisTemplate.setConnectionFactory(jedisConnectionFactory);
+//        redisTemplate.setValueSerializer(new JdkSerializationRedisSerializer());
+//        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+//        redisTemplate.setValueSerializer(new OxmSerializer());
+        redisTemplate.afterPropertiesSet();
 
 //        System.out.println("Ссылка categoryService " + categoryService );
 //        System.out.println("Ссылка productsService " + productsService );
@@ -102,13 +162,13 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
     }
 
 
-//    public Cache getCache(String cacheId) {
-//        if(!redisTemplate.hasKey(cacheId)){
-//            Cache cache = new Cache();
-//            redisTemplate.opsForValue().set(cacheId,  cache);
-//        }
-//        return (Cache) redisTemplate.opsForValue().get(cacheId);
-//    }
+    public Cache getCache(String cacheId) {
+        if(!redisTemplate.hasKey(cacheId)){
+            Cache cache = new Cache();
+            redisTemplate.opsForValue().set(cacheId,  cache);
+        }
+        return (Cache) redisTemplate.opsForValue().get(cacheId);
+    }
 
 //    @Override
 //    public List<ProductDto> findAll() {
@@ -126,23 +186,26 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
 
     @Override
     public List<Product> findAll() {
-//        Cache cache = getCache("cache");
-//        if (cache != null) {
-//            System.out.println("cache");
-//        }
+        Cache cache = getCache("cache");
+        if (cache != null) {
+            System.out.println("ЕСТЬ cache");
+        }
 
-            if (!cacheData.containsKey("findAll")) {
-//            if (!cache.cacheData.containsKey("findAll")) {
+//            if (!cacheData.containsKey("findAll")) {
+            if (!cache.cacheData.containsKey("findAll")) {
 //        if (!redisTemplate.hasKey("findAll")) {
+
+
                 Object cashedListProducts = new Object();
                 cashedListProducts.setProductList(productsService.findAll());
-                cacheData.put("findAll", cashedListProducts);
-//                cache.cacheData.put("findAll", cashedListProducts);
-//            redisTemplate.opsForValue().set("cache", (Object) cache);
+//                cacheData.put("findAll", cashedListProducts);
+                cache.cacheData.put("findAll", cashedListProducts);
+//            assert cache != null;
+            redisTemplate.opsForValue().set("cache", (Object) cache);
 //        System.out.println("кеширование: productsService.findAll()");
             }
-            return cacheData.get("findAll").getProductList();
-//            return cache.cacheData.get("findAll").getProductList();
+//            return cacheData.get("findAll").getProductList();
+            return cache.cacheData.get("findAll").getProductList();
 //        return Objects.requireNonNull(redisTemplate.opsForValue().get("findAll")).getProductList();
 
     }
