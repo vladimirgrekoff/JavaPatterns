@@ -49,19 +49,9 @@ public class ProductsController {
     )
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
-//        List<ProductDto> productDtoList = new ArrayList<>();
-//        List<Product> productList = productsService.findAll();
-//        for (Product p: productList) {
-//            ProductDto productDto = productConverter.entityToDto(p);
-//            productDtoList.add(productDto);
-//        }
-//        return productDtoList;
-
         return productsService.findAll().stream()
                 .map(productMapper::mapToDto)
                 .toList();
-
-//        return productsService.findAll();
 
     }
 
@@ -96,12 +86,10 @@ public class ProductsController {
 
     ) {
         Page<ProductDto> pageProductDto = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
-//        Page<ProductDto> pageProductDto = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         PageDto<ProductDto> response = new PageDto<>();
         response.setPage(pageProductDto.getNumber());
         response.setItems(pageProductDto.getContent());
         response.setTotalPage(pageProductDto.getTotalPages());
-//        PageDto<ProductDto> response = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         return response;
     }
 

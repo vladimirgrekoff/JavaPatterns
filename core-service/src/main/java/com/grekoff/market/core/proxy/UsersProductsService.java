@@ -12,13 +12,9 @@ import java.util.Optional;
 
 
 public interface UsersProductsService {
-//    List<ProductDto> findAll();
     List<Product> findAll();
 
     Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage);
-//    Page<ProductDto> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage);
-//    PageDto<ProductDto> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage);
 
     Optional<Product> findById(Long id);
-//    ProductDto findById(Long id);
 }

@@ -47,10 +47,6 @@ public class UsersProductsController {
                     )
             }
     )
-//    @GetMapping("/all")
-//    public List<ProductDto> getAllProducts() {
-//        return usersProductsServiceProxy.findAll();
-//    }
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
         List<ProductDto> productDtoList = new ArrayList<>();
@@ -73,7 +69,6 @@ public class UsersProductsController {
             }
     )
     @GetMapping("/pages")
-//    public Page<ProductDto> getAllPagesProducts(
     public PageDto<ProductDto> getAllPagesProducts(
             @Parameter(description = "Минимальная цена продукта")
             @RequestParam(name = "min_price", required = false) Integer minPrice,
@@ -94,12 +89,10 @@ public class UsersProductsController {
 
     ) {
         Page<ProductDto> pageProductDto = usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage).map(productConverter::entityToDto);
-//        Page<ProductDto> pageProductDto = usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         PageDto<ProductDto> response = new PageDto<>();
         response.setPage(pageProductDto.getNumber());
         response.setItems(pageProductDto.getContent());
         response.setTotalPage(pageProductDto.getTotalPages());
-//        return usersProductsServiceProxy.findAllPages(minPrice, maxPrice, partTitle, offset, limit, first, last, currentPage);
         return response;
     }
 
@@ -119,7 +112,6 @@ public class UsersProductsController {
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
         return productConverter.entityToDto(usersProductsServiceProxy.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
-//        return usersProductsServiceProxy.findById(id);
     }
 
 

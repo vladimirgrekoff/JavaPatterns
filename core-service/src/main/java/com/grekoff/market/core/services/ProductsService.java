@@ -1,7 +1,7 @@
 package com.grekoff.market.core.services;
 
 
-import com.grekoff.market.api.core.PageDto;
+
 import com.grekoff.market.api.core.ProductDto;
 import com.grekoff.market.core.converters.ProductConverter;
 import com.grekoff.market.core.entities.Product;
@@ -20,14 +20,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-//@AllArgsConstructor
-//@NoArgsConstructor
 public class ProductsService implements UsersProductsService {
         private final ProductsRepository productsRepository;
         private final CategoryService categoryService;
@@ -40,16 +38,6 @@ public class ProductsService implements UsersProductsService {
 
     public int page = 0;
 
-//    public List<ProductDto> findAll() {
-//        List<ProductDto> productDtoList = new ArrayList<>();
-//        List<Product> productList = productsRepository.findAll();
-//        for (Product p: productList) {
-//            ProductDto productDto = productConverter.entityToDto(p);
-//            productDtoList.add(productDto);
-//        }
-//
-//        return productDtoList;
-//    }
 
     public List<Product> findAll() {
         return productsRepository.findAll();
@@ -58,8 +46,6 @@ public class ProductsService implements UsersProductsService {
 
 
     public Page<Product> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last,  Integer currentPage) {
-//    public PageDto<ProductDto> findAllPages(Integer minPrice, Integer maxPrice, String partTitle, Integer offset, Integer size, Boolean first, Boolean last, Integer currentPage) {
-
         Long numberOfProducts = productsRepository.countProducts();
 
         Integer lastPage = calculateNumberOfLastPages(numberOfProducts, size);
@@ -88,14 +74,6 @@ public class ProductsService implements UsersProductsService {
             spec = spec.and(ProductsSpecifications.titleLike(partTitle));
         }
         return productsRepository.findAll(spec, PageRequest.of(page,size));
-//        Page<Product> productPage = productsRepository.findAll(spec, PageRequest.of(page,size));
-//
-//        Page<ProductDto> pageProductDto = productPage.map(productConverter::entityToDto);
-//        PageDto<ProductDto> pageDtoProductDto = new PageDto<>();
-//        pageDtoProductDto.setPage(pageProductDto.getNumber());
-//        pageDtoProductDto.setItems(pageProductDto.getContent());
-//        pageDtoProductDto.setTotalPage(pageProductDto.getTotalPages());
-//        return pageDtoProductDto;
     }
 
     private int checkLastNumberPage(int numCurrentPage, int lastPage){
@@ -131,23 +109,13 @@ public class ProductsService implements UsersProductsService {
         return productsRepository.findById(id);
     }
 
-//    public ProductDto findById(Long id) {
-////        return productsRepository.findById(id);
-//        return productConverter.entityToDto(productsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
-//    }
-
     public void deleteById(Long id) {
         productsRepository.deleteById(id);
     }
 
     @Transactional
     public void createNewProduct(ProductDto productDto) {
-//        Product product = new Product();
-//        product.setTitle(productDto.getTitle());
-//        product.setPrice(productDto.getPrice());
-//        product.setCategory(categoryService.findByTitle(productDto.getCategoryTitle()).orElseThrow(() -> new ResourceNotFoundException("Категория с названием: " + productDto.getCategoryTitle() + " не найдена")));
         productsRepository.save(productMapper.mapToEntity(productDto));
-//        productsRepository.save(product);
         eventPublisher.publishChangedDBProductsEvent(new ChangedDBProductsEvent("Products Database changed"));
     }
 
