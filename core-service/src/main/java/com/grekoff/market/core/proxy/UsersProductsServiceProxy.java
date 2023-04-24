@@ -77,16 +77,14 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
                     redisTemplate.opsForValue().set("cache", cache);
                 }
                 byte[] productListBytes = (byte[]) ((Map<String, byte[]>) redisTemplate.opsForValue().get("cache")).get("findAll");
-                List<Product> productListFromCache = (List<Product>) byteArraySerializer.deserialize(productListBytes);
-                return productListFromCache;
+
+                return (List<Product>) byteArraySerializer.deserialize(productListBytes);
             }
-            List<Product> productList =  productsService.findAll();
-            result = productList;
+            result = productsService.findAll();;
         } catch (Exception e) {
             //  e.printStackTrace();
-            log.error(String.valueOf(e));
-            List<Product> productList =  productsService.findAll();
-            result = productList;
+            log.warn(String.valueOf(e));
+            result = productsService.findAll();;
         }
         return result;
     }
@@ -106,16 +104,15 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
                     redisTemplate.opsForValue().set("cache", cache);
                 }
                 byte[] pageProductsBytes = (byte[]) ((Map<String, byte[]>) Objects.requireNonNull(redisTemplate.opsForValue().get("cache"))).get(currentPageValue);
-                Page<Product> pageProductFromCache = (Page<Product>) byteArraySerializer.deserialize(pageProductsBytes);
-                return pageProductFromCache;
+
+                return (Page<Product>) byteArraySerializer.deserialize(pageProductsBytes);
             }
             Page<Product> pageProduct = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, size, first, last, currentPage);
             result = pageProduct;
         } catch (Exception e) {
             //  e.printStackTrace();
-            log.error(String.valueOf(e));
-            Page<Product> pageProduct = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, size, first, last, currentPage);
-            result = pageProduct;
+            log.warn(String.valueOf(e));
+            result = productsService.findAllPages(minPrice, maxPrice, partTitle, offset, size, first, last, currentPage);
         }
         return result;
     }
@@ -136,13 +133,11 @@ public class UsersProductsServiceProxy implements UsersProductsService, Listener
                 Product productFromCache = (Product) byteArraySerializer.deserialize(productOptionalBytes);
                 return Optional.ofNullable(productFromCache);
             }
-            Optional<Product> productOptional = Optional.of(productsService.findById(id).get());
-            result = productOptional;
+            result = productsService.findById(id);
         } catch (Exception e) {
             //  e.printStackTrace();
-            log.error(String.valueOf(e));
-            Optional<Product> productOptional = Optional.of(productsService.findById(id).get());
-            result = productOptional;
+            log.warn(String.valueOf(e));
+            result = productsService.findById(id);
         }
         return result;
     }

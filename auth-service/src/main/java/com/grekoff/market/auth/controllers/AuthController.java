@@ -63,12 +63,4 @@ public class AuthController {
     }
 
 
-//    @GetMapping("/user")
-//    public Principal user(HttpServletRequest request) {
-//        System.out.println("вызов user");///////////////////////////////////////////////
-//        String authToken = request.getHeader("Authorization").substring("Basic ".length()).trim();
-//        System.out.println("authToken " + authToken);////////////////////////////////////////
-//        return () ->  new String(Base64.getDecoder().decode(authToken)).split(":")[0];
-//    }
-
 }

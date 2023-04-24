@@ -114,6 +114,4 @@ public class UsersProductsController {
         return productConverter.entityToDto(usersProductsServiceProxy.findById(id).orElseThrow(() -> new ResourceNotFoundException("Продукт с id: " + id + " не найден")));
     }
 
-
-
 }
